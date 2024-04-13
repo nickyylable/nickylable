@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Круговая анимация загрузки</title>
+    <link href="https://fonts.googleapis.com/css?family=Poppins:100,200,300,400,500,600,700,800,900" rel="stylesheet">
+<style>
+    @import url("https://fonts.googleapis.com/css?family=Luckiest+Guy");
+    body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        background-image: url('fon.jpg'), linear-gradient(90deg, skyblue 0%, steelblue 100%); /* Добавление градиента поверх фона */
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        font-family: "Luckiest Guy", cursive; /* Добавление нового шрифта */
+        -webkit-font-smoothing: antialiased; /* Улучшение рендеринга шрифта */
+        overflow: hidden; /* Новое свойство, если нужно скрыть скролл */
+    }
+    #photo-container {
+        margin-top: 0;
+        width: 800px;
+        height: 800px;
+        border: none; /* Удаление стандартной границы */
+        position: relative;
+        margin-bottom: 20px;
+        overflow: hidden;
+        box-shadow: 0 0 30px 10px orange; /* Добавление оранжевого свечения */
+        border-radius: 15px; /* Закругление углов для более мягкого вида */
+        background: linear-gradient(90deg, skyblue 0%, steelblue 100%); /* Голубой градиентный фон */
+    }
+    }
+    #loading-animation {
+        width: 100px;
+        height: 100px;
+        position: absolute;
+        top: 70%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        color: black;
+        font-family: 'Intro', sans-serif; /* Fallback to sans-serif if Intro is not available */
+        font-weight: bold; /* Делаем текст жирным */
+    }
+    .circle-background {
+        fill: none;
+        stroke: #eee;
+        stroke-width: 4;
+        display: none;
+    }
+    .circle-bar {
+        fill: none;
+        stroke-width: 4;
+        display: none;
+        stroke-dasharray: 251;
+        stroke-dashoffset: 251; /* Установить начальное положение, соответствующее 0% */
+        stroke: orange; /* Выберите желаемый цвет для круга */
+        transform: rotate(-90deg);
+        transform-origin: 50% 50%;
+    }
+
+    @keyframes loadProgress {
+        from {
+            stroke-dashoffset: 251;
+        }
+        to {
+            stroke-dashoffset: 0;
+        }
+    }
+
+    @keyframes colorChange {
+        0% { stroke: red; }
+        33% { stroke: yellow; }
+        66% { stroke: orange; }
+        100% { stroke: red; }
+    }
+    #loaded-image {
+        max-width: 100%;
+        max-height: 100%;
+        display: none;
+    }
+    @keyframes gradient-animation {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+    }
+    @font-face {
+    font-family: 'Intro';
+    src: url('intro.otf') format('opentype'); /* Укажите правильный путь к файлу шрифта */
+    font-weight: normal;
+    font-style: normal;
+    }
+
+    #trap-count-label {
+        margin: 20px 0;
+        font-size: 50px;
+        text-align: center;
+        color: white;
+        font-family: 'Intro', sans-serif; /* Fallback to sans-serif if Intro is not available */
+        font-weight: bold; /* Делаем текст жирным */
+    }
+
+   #counter-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 400px; /* Фиксированная ширина контейнера */
+        margin: 20px auto; /* Центрирование контейнера */
+    }
+
+    .count-display {
+        width: 120px; /* Фиксированная ширина для блока с числом */
+        text-align: center; /* Центрирование текста внутри блока */
+        font-size: 106px; /* Адекватный размер текста */
+        color: white;
+        margin: 0 20px; /* Запас между иконками и числом */
+        font-weight: bold; /* Делаем текст жирным */
+    }
+
+    .icon {
+        cursor: pointer; /* Указатель при наведении */
+        width: 100px; /* Фиксированная ширина для иконок */
+        height: 100px; /* Фиксированная высота для иконок */
+    }
+    @keyframes shifting-gradient {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+    }
+   .photo-button {
+    width: 370px;
+    height: 170px;
+    margin: 20px 0;
+    padding: 10px 20px;
+    font-size: 36px;
+    font-family: 'Intro', sans-serif;
+    color: white; /* Черный текст для контраста на оранжевом фоне */
+    background-color: #FFA500; /* Светло-оранжевый фон */
+    border: 3px solid #FFA500; /* Установка границы такого же цвета, как фон */
+    border-radius: 35px; /* Овальная форма кнопки */
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Тень для создания эффекта приподнятости */
+    text-align: center;
+    display: block;
+    font-weight: bold;
+    transition: all 0.3s ease; /* Плавные переходы для интерактивных эффектов */
+    }
+    #percentage-text {
+    fill: black; /* Измените на желаемый цвет */
+    font-size: 18px; /* Установите нужный размер шрифта */
+    font-family: 'Intro', sans-serif; /* Укажите предпочитаемый шрифт */
+    font-weight: bold; /* Сделайте текст жирным, если это необходимо */
+    }
+    #progressbar {
+        height: 26px;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 200px;
+        background: rgba(159, 159, 159, 0.5);
+        border-radius: 10px;
+        margin: -13px 0 0 -100px;
+        padding: 2px;
+    }
+    #loading {
+        transition: all 500ms ease;
+        height: 20px;
+        width: 0%; /* Начальная ширина для анимации загрузки */
+        border-radius: 8px;
+        background: #ffffff;
+        position: absolute;
+        margin: 3px;
+    }
+    #loading-text {
+        cursor: default;
+        position: absolute;
+        top: 30%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 100%;
+        text-align: center;
+    }
+
+    #loading-text span {
+        display: inline-block;
+        animation: bounce 0.3s ease infinite alternate;
+        font-size: 120px;
+        color: #ffffff;
+        text-shadow: 0 1px 0 #ccc, 0 2px 0 #ccc, 0 3px 0 #ccc, 0 4px 0 #ccc,
+          0 5px 0 #ccc, 0 6px 0 transparent, 0 7px 0 transparent, 0 8px 0 transparent,
+          0 9px 0 transparent, 0 10px 10px rgba(0, 0, 0, 0.4);
+    }
+
+    #loading-text span:nth-child(1) { animation-delay: 0s; }
+    #loading-text span:nth-child(2) { animation-delay: 0.1s; }
+    #loading-text span:nth-child(3) { animation-delay: 0.2s; }
+    #loading-text span:nth-child(4) { animation-delay: 0.3s; }
+    #loading-text span:nth-child(5) { animation-delay: 0.4s; }
+    #loading-text span:nth-child(6) { animation-delay: 0.5s; }
+    #loading-text span:nth-child(7) { animation-delay: 0.6s; }
+
+    @keyframes bounce {
+        0% {
+            transform: translateY(0px);
+            text-shadow: 0 1px 0 #ccc, 0 2px 0 #ccc, 0 3px 0 #ccc, 0 4px 0 #ccc,
+                0 5px 0 #ccc, 0 6px 0 transparent, 0 7px 0 transparent, 0 8px 0 transparent,
+                0 9px 0 transparent, 0 10px 10px rgba(0, 0, 0, 0.4);
+        }
+        100% {
+            transform: translateY(-20px);
+            text-shadow: 0 1px 0 #ccc, 0 2px 0 #ccc, 0 3px 0 #ccc, 0 4px 0 #ccc,
+                0 5px 0 #ccc, 0 6px 0 transparent, 0 7px 0 transparent, 0 8px 0 transparent,
+                0 9px 0 transparent, 0 50px 25px rgba(0, 0, 0, 0.2);
+        }
+    }
+
+
+
+
+</style>
+</head>
+<body>
+
+<div id="photo-container">
+     <h1 id="loading-text">
+        <span>N</span><span>$</span><span>G</span><span>O</span><span>C</span><span>I</span><span>O</span>
+    </h1>
+    <div id="progressbar">  <!-- Новый линейный индикатор загрузки -->
+        <div id="loading"></div>
+    </div>
+    <img id="loaded-image" src="" alt="Loaded Image">
+</div>
+<div id="trap-count-label">
+     КОЛ-ВО ЛОВУШЕК
+</div>
+<div id="counter-container">
+    <!-- Иконка '+' для увеличения количества -->
+    <img class="control-button icon" src="minus.png" onclick="decrement()" alt="Minus">
+    <span id="count" class="count-display">1</span>
+    <!-- Исправлено: Иконка '+' теперь отвечает за функцию 'decrement()' -->
+    <img class="control-button icon" src="plus.png" onclick="increment()" alt="Plus">
+</div>
+
+<button class="control-button photo-button" onclick="loadRandomPhoto()">Получить Сигнал</button>
+<script>
+let count = 1;
+const countElement = document.getElementById('count');
+
+function increment() {
+    if (count < 7) {
+        count += 2;
+        countElement.textContent = count;
+    }
+}
+
+function decrement() {
+    if (count > 1) {
+        count -= 2;
+        countElement.textContent = count;
+    }
+}
+
+function loadRandomPhoto() {
+    const loadingText = document.getElementById('loading-text'); // Получение элемента текста загрузки
+    const progressBar = document.getElementById('progressbar');
+    const loadingBar = document.getElementById('loading');
+    const loadedImage = document.getElementById('loaded-image');
+    let progress = 0;
+
+    // Скрыть фотографию перед началом новой загрузки
+    loadedImage.style.display = 'none';
+    progressBar.style.display = 'block';  // Показать линейный индикатор загрузки
+    loadingText.style.display = 'block';  // Показать текст загрузки
+    loadingBar.style.width = '0%';        // Сброс ширины индикатора загрузки
+
+    const photos = [
+        ['results/photo1.jpg', 'results/photo2.jpg', 'results/photo3.jpg', 'results/photo4.jpg', 'results/photo5.jpg', 'results/photo6.jpg', 'results/photo7.jpg', 'results/photo8.jpg', 'results/photo9.jpg', 'results/photo10.jpg', 'results/photo11.jpg', 'results/photo12.jpg', 'results/photo13.jpg', 'results/photo14.jpg', 'results/photo15.jpg', 'results/photo16.jpg', 'results/photo17.jpg', 'results/photo18.jpg', 'results/photo19.jpg', 'results/photo20.jpg', 'results/photo21.jpg', 'results/photo22.jpg', 'results/photo23.jpg', 'results/photo24.jpg', 'results/photo25.jpg', 'results/photo26.jpg', 'results/photo27.jpg', 'results/photo28.jpg', 'results/photo29.jpg', 'results/photo30.jpg'],
+        ['results3/photo1.jpg', 'results3/photo2.jpg', 'results3/photo3.jpg', 'results3/photo4.jpg', 'results3/photo5.jpg', 'results3/photo6.jpg', 'results3/photo7.jpg', 'results3/photo8.jpg', 'results3/photo9.jpg', 'results3/photo10.jpg', 'results3/photo11.jpg', 'results3/photo12.jpg', 'results3/photo13.jpg', 'results3/photo14.jpg', 'results3/photo15.jpg', 'results3/photo16.jpg', 'results3/photo17.jpg', 'results3/photo18.jpg', 'results3/photo19.jpg', 'results3/photo20.jpg', 'results3/photo21.jpg', 'results3/photo22.jpg', 'results3/photo23.jpg', 'results3/photo24.jpg', 'results3/photo25.jpg', 'results3/photo26.jpg', 'results3/photo27.jpg', 'results3/photo28.jpg', 'results3/photo29.jpg', 'results3/photo30.jpg', 'results3/photo31.jpg', 'results3/photo32.jpg', 'results3/photo33.jpg', 'results3/photo34.jpg', 'results3/photo35.jpg', 'results3/photo36.jpg', 'results3/photo37.jpg', 'results3/photo38.jpg', 'results3/photo39.jpg', 'results3/photo40.jpg', 'results3/photo41.jpg', 'results3/photo42.jpg', 'results3/photo43.jpg', 'results3/photo44.jpg', 'results3/photo45.jpg', 'results3/photo46.jpg', 'results3/photo47.jpg', 'results3/photo48.jpg', 'results3/photo49.jpg', 'results3/photo50.jpg', 'results3/photo51.jpg', 'results3/photo52.jpg', 'results3/photo53.jpg', 'results3/photo54.jpg', 'results3/photo55.jpg', 'results3/photo56.jpg', 'results3/photo57.jpg', 'results3/photo58.jpg', 'results3/photo59.jpg', 'results3/photo60.jpg', 'results3/photo61.jpg', 'results3/photo62.jpg', 'results3/photo63.jpg', 'results3/photo64.jpg', 'results3/photo65.jpg', 'results3/photo66.jpg', 'results3/photo67.jpg', 'results3/photo68.jpg', 'results3/photo69.jpg', 'results3/photo70.jpg', 'results3/photo71.jpg', 'results3/photo72.jpg', 'results3/photo73.jpg', 'results3/photo74.jpg', 'results3/photo75.jpg', 'results3/photo76.jpg', 'results3/photo77.jpg', 'results3/photo78.jpg', 'results3/photo79.jpg', 'results3/photo80.jpg', 'results3/photo81.jpg', 'results3/photo82.jpg', 'results3/photo83.jpg'],
+        ['results5/photo1.jpg', 'results5/photo2.jpg', 'results5/photo3.jpg', 'results5/photo4.jpg', 'results5/photo5.jpg', 'results5/photo6.jpg', 'results5/photo7.jpg', 'results5/photo8.jpg', 'results5/photo9.jpg', 'results5/photo10.jpg', 'results5/photo11.jpg', 'results5/photo12.jpg', 'results5/photo13.jpg', 'results5/photo14.jpg', 'results5/photo15.jpg', 'results5/photo16.jpg', 'results5/photo17.jpg', 'results5/photo18.jpg', 'results5/photo19.jpg', 'results5/photo20.jpg', 'results5/photo21.jpg', 'results5/photo22.jpg', 'results5/photo23.jpg', 'results5/photo24.jpg', 'results5/photo25.jpg', 'results5/photo26.jpg', 'results5/photo27.jpg', 'results5/photo28.jpg', 'results5/photo29.jpg', 'results5/photo30.jpg'],
+        ['results7/photo1.jpg', 'results7/photo2.jpg', 'results7/photo3.jpg', 'results7/photo4.jpg', 'results7/photo5.jpg', 'results7/photo6.jpg', 'results7/photo7.jpg', 'results7/photo8.jpg', 'results7/photo9.jpg', 'results7/photo10.jpg', 'results7/photo11.jpg', 'results7/photo12.jpg', 'results7/photo13.jpg', 'results7/photo14.jpg', 'results7/photo15.jpg', 'results7/photo16.jpg', 'results7/photo17.jpg', 'results7/photo18.jpg', 'results7/photo19.jpg', 'results7/photo20.jpg', 'results7/photo21.jpg', 'results7/photo22.jpg', 'results7/photo23.jpg', 'results7/photo24.jpg', 'results7/photo25.jpg', 'results7/photo26.jpg', 'results7/photo27.jpg', 'results7/photo28.jpg', 'results7/photo29.jpg', 'results7/photo30.jpg']
+    ];
+
+    const interval = setInterval(() => {
+        progress++;
+        loadingBar.style.width = `${progress}%`; // Обновление ширины индикатора загрузки
+
+        if (progress >= 100) {
+            clearInterval(interval);
+            setTimeout(() => {
+                loadedImage.onload = () => {
+                    loadedImage.style.display = 'block';
+                    progressBar.style.display = 'none'; // Скрыть индикатор загрузки
+                    loadingText.style.display = 'none';  // Скрыть текст загрузки
+                };
+                const photoIndex = Math.floor((count - 1) / 2);
+                const randomIndex = Math.floor(Math.random() * photos[photoIndex].length);
+                loadedImage.src = photos[photoIndex][randomIndex];
+            }, 250);
+        }
+    }, 25);
+}
+</script>
+
+</body>
+</html>
