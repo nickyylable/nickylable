@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>N$GOCIO MINES</title>
+<title>Круговая анимация загрузки</title>
     <link href="https://fonts.googleapis.com/css?family=Poppins:100,200,300,400,500,600,700,800,900" rel="stylesheet">
 <style>
     @import url("https://fonts.googleapis.com/css?family=Luckiest+Guy");
@@ -98,7 +98,7 @@
     }
     @font-face {
     font-family: 'Intro';
-    src: url('Intro.otf') format('opentype'); /* Укажите правильный путь к файлу шрифта */
+    src: url('intro.otf') format('opentype'); /* Укажите правильный путь к файлу шрифта */
     font-weight: normal;
     font-style: normal;
     }
@@ -109,7 +109,7 @@
         text-align: center;
         color: white;
         font-family: 'Intro', sans-serif; /* Fallback to sans-serif if Intro is not available */
-        font-weight: bolder; /* Делаем текст жирным */
+        font-weight: bold; /* Делаем текст жирным */
     }
 
    #counter-container {
@@ -127,19 +127,6 @@
         color: white;
         margin: 0 20px; /* Запас между иконками и числом */
         font-weight: bold; /* Делаем текст жирным */
-    }
-     @media (max-width: 600px) {
-        #photo-container {
-            width: 100%;
-            height: auto;
-        }
-        .control-button {
-            width: 50px;
-            height: 50px;
-        }
-        #trap-count-label {
-            font-size: 30px;
-        }
     }
 
     .icon {
@@ -159,7 +146,6 @@
     }
     }
    .photo-button {
-    font-weight: bolder;
     width: 370px;
     height: 170px;
     margin: 20px 0;
@@ -174,6 +160,7 @@
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Тень для создания эффекта приподнятости */
     text-align: center;
     display: block;
+    font-weight: bold;
     transition: all 0.3s ease; /* Плавные переходы для интерактивных эффектов */
     }
     #percentage-text {
@@ -244,6 +231,24 @@
                 0 9px 0 transparent, 0 50px 25px rgba(0, 0, 0, 0.2);
         }
     }
+    #popup {
+        display: none;
+        position: fixed;
+        left: 50%;
+        top: 40%;
+        transform: translate(-50%, -50%);
+        background: linear-gradient(90deg, skyblue 0%, steelblue 100%); /* Применение голубого градиентного фона */
+        color: white;
+        padding: 40px; /* Увеличение отступов */
+        min-width: 300px; /* Минимальная ширина */
+        min-height: 50px; /* Минимальная высота */
+        border-radius: 20px; /* Увеличенный радиус границ */
+        z-index: 100;
+        text-align: center;
+        font-family: 'Intro', sans-serif; /* Установка шрифта Intro */
+        font-size: 32px; /* Увеличение размера шрифта */
+        box-shadow: 0 0 30px 10px orange; 
+    }
 
 
 
@@ -261,6 +266,7 @@
     </div>
     <img id="loaded-image" src="" alt="Loaded Image">
 </div>
+<div id="popup">Игра #<span id="game-number"></span><br>Шанс - <span id="chance"></span>%</div>
 <div id="trap-count-label">
      КОЛ-ВО ЛОВУШЕК
 </div>
@@ -272,7 +278,7 @@
     <img class="control-button icon" src="plus.png" onclick="increment()" alt="Plus">
 </div>
 
-<button class="control-button photo-button" onclick="loadRandomPhoto()">ПОЛУЧИТЬ<br>СИГНАЛ</button>
+<button class="control-button photo-button" onclick="loadRandomPhoto()">Получить Сигнал</button>
 <script>
 let count = 1;
 const countElement = document.getElementById('count');
@@ -290,6 +296,16 @@ function decrement() {
         countElement.textContent = count;
     }
 }
+
+function showPopup() {
+        const popup = document.getElementById('popup');
+        const gameNumber = document.getElementById('game-number');
+        const chance = document.getElementById('chance');
+        gameNumber.textContent = Math.floor(Math.random() * 90000) + 10000; // Случайное число из 5 цифр
+        chance.textContent = Math.floor(Math.random() * 21) + 70; // Случайное число от 70 до 90
+        popup.style.display = 'block'; // Показать всплывающее окно
+        setTimeout(() => { popup.style.display = 'none'; }, 5000); // Автоматическое закрытие через 5 секунд
+    }
 
 function loadRandomPhoto() {
     const loadingText = document.getElementById('loading-text'); // Получение элемента текста загрузки
@@ -322,6 +338,7 @@ function loadRandomPhoto() {
                     loadedImage.style.display = 'block';
                     progressBar.style.display = 'none'; // Скрыть индикатор загрузки
                     loadingText.style.display = 'none';  // Скрыть текст загрузки
+                    showPopup();
                 };
                 const photoIndex = Math.floor((count - 1) / 2);
                 const randomIndex = Math.floor(Math.random() * photos[photoIndex].length);
