@@ -260,9 +260,11 @@
         left: 0;
         width: 100vw;
         height: 100vh;
-        background-color: rgba(0, 0, 0, 0.5); /* Полупрозрачный черный цвет */
-        z-index: 99; /* Затемнение находится под popup, но над остальным содержимым */
-        overflow: hidden; /* Скрыть любые выступающие элементы */
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 99;
+        overflow: hidden;
+        transform: scale(2.5); /* Обратное масштабирование */
+        transform-origin: top left; /* Важно устанавливать от верхнего левого угла, чтобы покрыть весь экран */
     }
 
 
