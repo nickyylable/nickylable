@@ -12,13 +12,18 @@
         align-items: center;
         justify-content: center;
         height: 100vh;
-        background-image: url('fon.jpg'), linear-gradient(90deg, skyblue 0%, steelblue 100%); /* Добавление градиента поверх фона */
+        background-image: url('fon.jpg'), linear-gradient(90deg, skyblue 0%, steelblue 100%);
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
-        font-family: "Luckiest Guy", cursive; /* Добавление нового шрифта */
-        -webkit-font-smoothing: antialiased; /* Улучшение рендеринга шрифта */
-        overflow: hidden; /* Новое свойство, если нужно скрыть скролл */
+        font-family: "Luckiest Guy", cursive;
+        -webkit-font-smoothing: antialiased;
+        overflow: hidden;
+        transform: scale(0.67);
+        transform-origin: top left;
+        width: 150%;
+        height: 150%;
+        overflow: hidden;
     }
     #photo-container {
         margin-top: 0;
